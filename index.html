@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A beautifully hand-crafted scrapbook and memory board for Krithi's birthday, filled with shared photos and warm wishes from friends.">
+  <title>Happy Birthday Krithi! 🎂 | Memory Board</title>
+  <!-- Google Fonts: Outfit for clean interface, Playfair Display for elegant headings -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Hero Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <h1 class="main-title">Happy Birthday, Krithi! 🌸</h1>
+      <p class="subtitle">A minimal scrapbook of memories, shared laughter, and birthday wishes from your favorite people.</p>
+      <div id="stats-counter" class="stats-counter">
+        Loading memories...
+      </div>
+    </div>
+  </header>
+
+  <!-- Top Level Section Tabs -->
+  <nav class="section-tabs-bar">
+    <div class="tabs-container">
+      <button id="tab-btn-memories" class="tab-btn active" role="tab" aria-controls="memories-section" aria-selected="true">
+        Memories 📸
+      </button>
+      <button id="tab-btn-wishes" class="tab-btn" role="tab" aria-controls="wishes-section" aria-selected="false">
+        Wishes 💌
+      </button>
+    </div>
+  </nav>
+
+  <!-- Memories Section (Default Active) -->
+  <div id="memories-section" class="section-content">
+    <!-- Subfolder Filter Pills -->
+    <nav class="navigation-bar">
+      <div class="nav-container">
+        <div id="filter-bar" class="filter-bar" role="tablist" aria-label="Filter memories by folder">
+          <!-- Dynamic buttons will be inserted here by app.js -->
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content: Masonry Grid -->
+    <main class="gallery-wrapper">
+      <section id="gallery-grid" class="gallery-grid" aria-live="polite">
+        <!-- Dynamic photo cards will be inserted here by app.js -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Wishes Section (Hidden by default) -->
+  <section id="wishes-section" class="guestbook-section section-content hidden">
+    <div class="guestbook-container">
+      <h2 class="section-title">Wishes for Krithi 💌</h2>
+      <p class="section-subtitle">A collection of warm messages and sweet wishes pinned by your friends.</p>
+
+      <!-- Wishes Pin Board at the Top -->
+      <div id="wishes-container" class="wishes-container">
+        <!-- Saved wishes will load here as polaroid cards -->
+      </div>
+      
+      <!-- Leave a Wish Form at the Bottom -->
+      <div class="leave-wish-wrapper">
+        <h3 class="leave-wish-title">Leave a Wish ✏️</h3>
+        <form id="wish-form" class="wish-form">
+          <div class="input-group">
+            <label for="wish-text" class="sr-only">Your Wish</label>
+            <textarea id="wish-text" placeholder="Write something sweet for Krithi..." required maxlength="400" rows="4"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="input-group name-input">
+              <label for="wish-name" class="sr-only">Your Name</label>
+              <input type="text" id="wish-name" placeholder="Your Name" required maxlength="40">
+            </div>
+            <button type="submit" id="wish-submit-btn" class="btn btn-primary">Pin Wish 📌</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Native Accessible Dialog Lightbox for Image Zoom -->
+  <dialog id="lightbox-modal" class="lightbox-modal">
+    <div class="lightbox-content-wrapper">
+      <button id="lightbox-close" class="lightbox-btn-close" aria-label="Close lightbox">✕</button>
+      
+      <div class="lightbox-image-container">
+        <button id="lightbox-prev" class="lightbox-nav-btn prev" aria-label="Previous image">‹</button>
+        <img id="lightbox-img" src="" alt="Enlarged photo preview" fetchpriority="high">
+        <button id="lightbox-next" class="lightbox-nav-btn next" aria-label="Next image">›</button>
+      </div>
+      
+      <div class="lightbox-details">
+        <div class="lightbox-meta">
+          <span id="lightbox-folder" class="folder-badge">Category</span>
+        </div>
+        <div class="lightbox-actions">
+          <button id="lightbox-like-btn" class="btn btn-like">
+            <svg class="heart-svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            Like (<span id="lightbox-like-count">0</span>)
+          </button>
+          <button id="lightbox-autoplay" class="btn btn-autoplay">
+            <span class="play-icon">▶</span> Slideshow
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>Made with 🤍 for Krithi's Birthday.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
