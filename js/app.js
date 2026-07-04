@@ -271,6 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
     filterMemories("all");
     renderWishes();
     setupEventListeners();
+    initIntroOverlay();
     
     if (useFirebase) {
       setupFirebaseSync();
@@ -993,6 +994,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (wordleResetBtn) {
     wordleResetBtn.addEventListener("click", initWordleGame);
+  }
+
+  // --- Intro Cover Screen Overlay & Particle Explosion ---
+  function initIntroOverlay() {
+    const introOverlay = document.getElementById("intro-overlay");
+    const flowerBtn = document.getElementById("flower-trigger-btn");
+    
+    if (!introOverlay || !flowerBtn) return;
+
+    flowerBtn.addEventListener("click", (e) => {
+      // Get click center coordinates
+      const rect = flowerBtn.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      // Trigger blossom explosion particles
+      createBlossomExplosion(x, y);
+
+      // Fade out and remove intro cover
+      introOverlay.classList.add("fade-out");
+      setTimeout(() => {
+        introOverlay.remove();
+      }, 1200); // matches CSS fade-out transition duration
+    });
+  }
+
+  function createBlossomExplosion(x, y) {
+    const particleCount = 45;
+    const colors = ["#FF4081", "#D6336C", "#FFB6C1", "#FFF5F8"];
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement("div");
+      
+      const isPetal = Math.random() > 0.4;
+      if (isPetal) {
+        particle.className = "explosion-petal";
+        particle.innerHTML = `
+          <svg viewBox="0 0 24 24" style="width:100%; height:100%;">
+            <path d="M12,2 C16,8 20,12 12,22 C4,12 8,8 12,2 Z" fill="${colors[Math.floor(Math.random() * colors.length)]}"/>
+          </svg>
+        `;
+      } else {
+        particle.className = "explosion-particle";
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.boxShadow = `0 0 8px ${particle.style.backgroundColor}`;
+      }
+
+      particle.style.left = `${x - 10}px`;
+      particle.style.top = `${y - 10}px`;
+
+      const angle = Math.random() * Math.PI * 2;
+      const velocity = 80 + Math.random() * 260; // radius of travel
+      const destX = Math.cos(angle) * velocity;
+      const destY = Math.sin(angle) * velocity;
+      const rotation = Math.random() * 720 - 360;
+
+      particle.style.setProperty("--x", `${destX}px`);
+      particle.style.setProperty("--y", `${destY}px`);
+      particle.style.setProperty("--rot", `${rotation}deg`);
+
+      document.body.appendChild(particle);
+
+      setTimeout(() => {
+        particle.remove();
+      }, 2000);
+    }
   }
 
   // Start the application

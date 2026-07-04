@@ -14,6 +14,31 @@
 </head>
 <body>
 
+  <!-- Intro Birthday Cover Overlay -->
+  <div id="intro-overlay" class="intro-overlay">
+    <div class="intro-content">
+      <h1 class="intro-title">Happy Birthday, Krithi!</h1>
+      <button id="flower-trigger-btn" class="flower-trigger-btn" aria-label="Uncover the memories">
+        <svg class="intro-flower-svg" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="intro-flower-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFF5F8" />
+              <stop offset="60%" stop-color="#FF4081" />
+              <stop offset="100%" stop-color="#D6336C" />
+            </radialGradient>
+          </defs>
+          <path d="M50,50 C45,30 35,15 50,5 C65,15 55,30 50,50 Z" fill="url(#intro-flower-glow)" />
+          <path d="M50,50 C68,40 85,38 90,53 C85,68 68,60 50,50 Z" fill="url(#intro-flower-glow)" />
+          <path d="M50,50 C62,65 65,85 53,90 C41,85 45,65 50,50 Z" fill="url(#intro-flower-glow)" />
+          <path d="M50,50 C38,65 15,68 10,53 C15,38 38,40 50,50 Z" fill="url(#intro-flower-glow)" />
+          <path d="M50,50 C32,40 15,20 28,10 C41,20 45,30 50,50 Z" fill="url(#intro-flower-glow)" />
+          <circle cx="50" cy="50" r="8" fill="#FFF5F8" />
+        </svg>
+      </button>
+      <p class="intro-instruction">Tap the blossom to begin ✨</p>
+    </div>
+  </div>
+
   <!-- Animated Aurora Background -->
   <div class="aurora-bg-container" aria-hidden="true">
     <div class="aurora-blob blob-1"></div>
@@ -25,7 +50,26 @@
   <!-- Top Hero Header -->
   <header class="app-header">
     <div class="header-container">
-      <h1 class="main-title">Happy Birthday, Krithi! 🌸</h1>
+      <div class="header-title-container">
+        <h1 class="main-title">Happy Birthday, Krithi!</h1>
+        <div class="header-flower-container">
+          <svg class="header-flower-svg" viewBox="0 0 100 100">
+            <defs>
+              <radialGradient id="header-flower-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#FFF5F8" />
+                <stop offset="60%" stop-color="#FF4081" />
+                <stop offset="100%" stop-color="#D6336C" />
+              </radialGradient>
+            </defs>
+            <path d="M50,50 C45,30 35,15 50,5 C65,15 55,30 50,50 Z" fill="url(#header-flower-glow)" />
+            <path d="M50,50 C68,40 85,38 90,53 C85,68 68,60 50,50 Z" fill="url(#header-flower-glow)" />
+            <path d="M50,50 C62,65 65,85 53,90 C41,85 45,65 50,50 Z" fill="url(#header-flower-glow)" />
+            <path d="M50,50 C38,65 15,68 10,53 C15,38 38,40 50,50 Z" fill="url(#header-flower-glow)" />
+            <path d="M50,50 C32,40 15,20 28,10 C41,20 45,30 50,50 Z" fill="url(#header-flower-glow)" />
+            <circle cx="50" cy="50" r="8" fill="#FFF5F8" />
+          </svg>
+        </div>
+      </div>
       <p class="subtitle">A minimal scrapbook of memories, shared laughter, and birthday wishes from your favorite people.</p>
     </div>
   </header>
