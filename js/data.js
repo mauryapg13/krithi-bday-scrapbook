@@ -376,16 +376,8 @@ const MEMORIES_DATA = {
       "name": "IMG-20260411-WA0307.jpg"
     },
     {
-      "id": "1usxLGxGm00KeBPjxGHm50z4vJ5gzjiZa",
-      "name": "IMG-20260411-WA0308.jpg"
-    },
-    {
       "id": "1lnWmurhK-ut0IQNX2TiShKECcVba28WQ",
       "name": "IMG-20260411-WA0309.jpg"
-    },
-    {
-      "id": "1pZrhY-tjbNrCpG0flE8XGWBKzzOZcQH8",
-      "name": "IMG-20260411-WA0310.jpg"
     },
     {
       "id": "1KmRs-7msn4L2vhW2VJY337xkHp7zxk9P",
@@ -400,14 +392,6 @@ const MEMORIES_DATA = {
     {
       "id": "1br00orYUD3yvEJhbjQ7HoybuWdVGgNl8",
       "name": "IMG-20250915-WA0008.jpg"
-    },
-    {
-      "id": "1cdhAJeK57xKdab_pxavLP-jB2JXwkEFl",
-      "name": "IMG-20260411-WA0386.jpg"
-    },
-    {
-      "id": "1DdVLJHA6BEBDCqgN7fdI3L073pjBaNlT",
-      "name": "IMG-20260411-WA0387.jpg"
     },
     {
       "id": "18j9aW0brAoq01PTqxYcNzHn_H7K9EBGc",
