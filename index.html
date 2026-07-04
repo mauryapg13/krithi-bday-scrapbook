@@ -39,6 +39,9 @@
       <button id="tab-btn-wishes" class="tab-btn" role="tab" aria-controls="wishes-section" aria-selected="false">
         Wishes 💌
       </button>
+      <button id="tab-btn-wordle" class="tab-btn" role="tab" aria-controls="wordle-section" aria-selected="false">
+        Wordle 🧩
+      </button>
     </div>
   </nav>
 
@@ -88,6 +91,29 @@
             <button type="submit" id="wish-submit-btn" class="btn btn-primary">Pin Wish 📌</button>
           </div>
         </form>
+      </div>
+  </section>
+
+  <!-- Wordle Game Section (Hidden by default) -->
+  <section id="wordle-section" class="wordle-section section-content hidden">
+    <div class="wordle-container">
+      <h2 class="section-title">Krithi's Wordle 🧩</h2>
+      <p class="section-subtitle">Guess the 5-letter birthday words about Krithi! You have 6 tries for each word.</p>
+      
+      <!-- Wordle Grid -->
+      <div id="wordle-grid" class="wordle-grid" role="grid" aria-label="Wordle guess grid">
+        <!-- 6 rows of 5 tiles generated dynamically by app.js -->
+      </div>
+
+      <!-- Wordle Keyboard -->
+      <div id="wordle-keyboard" class="wordle-keyboard" role="group" aria-label="Wordle keyboard">
+        <!-- Virtual keys generated dynamically by app.js -->
+      </div>
+
+      <!-- Controls / Win/Lose Message Area -->
+      <div id="wordle-message-box" class="wordle-message-box hidden">
+        <p id="wordle-status-text" class="wordle-status-text"></p>
+        <button id="wordle-reset-btn" class="btn btn-primary">Play Another Word 🔄</button>
       </div>
     </div>
   </section>

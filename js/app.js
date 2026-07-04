@@ -50,6 +50,23 @@ document.addEventListener("DOMContentLoaded", () => {
   // Option B: KVDB.io Key-Value Database (Easiest zero-config fallback)
   const KVDB_BASE = "https://kvdb.io/Qpw3YLeevQiJQ2Ekh2C6h1";
 
+  // --- Wordle Game Configuration ---
+  const WORDLE_WORDS = ["GMEET", "SWEET", "FUNNY", "DRAMA", "REELS", "COORG"];
+  const WORDLE_HINTS = {
+    "GMEET": "Where we spent hours talking during lockdowns! 💻",
+    "SWEET": "Just like you! 🍬",
+    "FUNNY": "For all the inside jokes and laughter! 😂",
+    "DRAMA": "Because life is boring without a little spice! 🎭",
+    "REELS": "For all the late-night Instagram sharing sessions! 📱",
+    "COORG": "The beautiful hills where you've made amazing memories! ⛰️"
+  };
+
+  let wordleTargetWord = "";
+  let wordleGuesses = [];
+  let wordleCurrentGuess = "";
+  let wordleGameOver = false;
+  let wordlePlayedWords = new Set();
+
   let db = null;
   let useFirebase = false;
 
@@ -658,27 +675,42 @@ document.addEventListener("DOMContentLoaded", () => {
     // Section Tab Switching
     const tabBtnMemories = document.getElementById("tab-btn-memories");
     const tabBtnWishes = document.getElementById("tab-btn-wishes");
+    const tabBtnWordle = document.getElementById("tab-btn-wordle");
+    
     const memoriesSection = document.getElementById("memories-section");
     const wishesSection = document.getElementById("wishes-section");
+    const wordleSection = document.getElementById("wordle-section");
+
+    function selectTab(activeTabBtn, activeSection) {
+      [tabBtnMemories, tabBtnWishes, tabBtnWordle].forEach(btn => {
+        if (btn) {
+          btn.classList.remove("active");
+          btn.setAttribute("aria-selected", "false");
+        }
+      });
+      [memoriesSection, wishesSection, wordleSection].forEach(section => {
+        if (section) {
+          section.classList.add("hidden");
+        }
+      });
+      activeTabBtn.classList.add("active");
+      activeTabBtn.setAttribute("aria-selected", "true");
+      activeSection.classList.remove("hidden");
+    }
 
     tabBtnMemories.addEventListener("click", () => {
-      tabBtnMemories.classList.add("active");
-      tabBtnMemories.setAttribute("aria-selected", "true");
-      tabBtnWishes.classList.remove("active");
-      tabBtnWishes.setAttribute("aria-selected", "false");
-      
-      memoriesSection.classList.remove("hidden");
-      wishesSection.classList.add("hidden");
+      selectTab(tabBtnMemories, memoriesSection);
     });
 
     tabBtnWishes.addEventListener("click", () => {
-      tabBtnWishes.classList.add("active");
-      tabBtnWishes.setAttribute("aria-selected", "true");
-      tabBtnMemories.classList.remove("active");
-      tabBtnMemories.setAttribute("aria-selected", "false");
-      
-      wishesSection.classList.remove("hidden");
-      memoriesSection.classList.add("hidden");
+      selectTab(tabBtnWishes, wishesSection);
+    });
+
+    tabBtnWordle.addEventListener("click", () => {
+      selectTab(tabBtnWordle, wordleSection);
+      if (!wordleTargetWord) {
+        initWordleGame();
+      }
     });
 
     // Lightbox Controls
@@ -748,6 +780,205 @@ document.addEventListener("DOMContentLoaded", () => {
         wishesContainer.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
+  }
+
+  // --- Wordle Game Engine Implementation ---
+  const wordleGrid = document.getElementById("wordle-grid");
+  const wordleKeyboard = document.getElementById("wordle-keyboard");
+  const wordleMessageBox = document.getElementById("wordle-message-box");
+  const wordleStatusText = document.getElementById("wordle-status-text");
+  const wordleResetBtn = document.getElementById("wordle-reset-btn");
+
+  function initWordleGame() {
+    if (wordlePlayedWords.size >= WORDLE_WORDS.length) {
+      wordlePlayedWords.clear();
+    }
+    const availableWords = WORDLE_WORDS.filter(w => !wordlePlayedWords.has(w));
+    wordleTargetWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+    
+    wordleGuesses = [];
+    wordleCurrentGuess = "";
+    wordleGameOver = false;
+    if (wordleMessageBox) wordleMessageBox.classList.add("hidden");
+
+    renderWordleGrid();
+    renderWordleKeyboard();
+  }
+
+  function renderWordleGrid() {
+    if (!wordleGrid) return;
+    wordleGrid.innerHTML = "";
+
+    for (let r = 0; r < 6; r++) {
+      const rowDiv = document.createElement("div");
+      rowDiv.className = "wordle-row";
+      rowDiv.setAttribute("role", "row");
+
+      const guess = wordleGuesses[r] || "";
+      for (let c = 0; c < 5; c++) {
+        const tile = document.createElement("div");
+        tile.className = "wordle-tile";
+        tile.setAttribute("role", "gridcell");
+
+        let letter = "";
+        if (r < wordleGuesses.length) {
+          letter = guess[c] || "";
+        } else if (r === wordleGuesses.length) {
+          letter = wordleCurrentGuess[c] || "";
+          if (letter) {
+            tile.classList.add("pop");
+          }
+        }
+
+        tile.textContent = letter;
+
+        if (r < wordleGuesses.length) {
+          const resultClass = getTileResultClass(letter, c, wordleTargetWord);
+          tile.classList.add(resultClass);
+          tile.classList.add("flip");
+          tile.style.animationDelay = `${c * 100}ms`;
+        }
+
+        rowDiv.appendChild(tile);
+      }
+      wordleGrid.appendChild(rowDiv);
+    }
+  }
+
+  function getTileResultClass(letter, index, target) {
+    if (target[index] === letter) {
+      return "correct";
+    }
+    if (target.includes(letter)) {
+      return "present";
+    }
+    return "absent";
+  }
+
+  const KEYBOARD_LAYOUT = [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+    ["enter", "z", "x", "c", "v", "b", "n", "m", "backspace"]
+  ];
+
+  function renderWordleKeyboard() {
+    if (!wordleKeyboard) return;
+    wordleKeyboard.innerHTML = "";
+
+    const keyStates = {};
+    for (let r = 0; r < wordleGuesses.length; r++) {
+      const guess = wordleGuesses[r];
+      for (let c = 0; c < 5; c++) {
+        const char = guess[c];
+        const state = getTileResultClass(char, c, wordleTargetWord);
+        if (state === "correct") {
+          keyStates[char] = "correct";
+        } else if (state === "present" && keyStates[char] !== "correct") {
+          keyStates[char] = "present";
+        } else if (state === "absent" && !keyStates[char]) {
+          keyStates[char] = "absent";
+        }
+      }
+    }
+
+    KEYBOARD_LAYOUT.forEach(rowKeys => {
+      const rowDiv = document.createElement("div");
+      rowDiv.className = "keyboard-row";
+
+      rowKeys.forEach(keyText => {
+        const btn = document.createElement("button");
+        btn.className = "key";
+        btn.textContent = keyText === "backspace" ? "⌫" : keyText;
+        
+        if (keyText === "enter" || keyText === "backspace") {
+          btn.classList.add("wide-key");
+        }
+
+        const charState = keyStates[keyText.toUpperCase()];
+        if (charState) {
+          btn.classList.add(charState);
+        }
+
+        btn.addEventListener("click", () => {
+          handleWordleInput(keyText);
+        });
+
+        rowDiv.appendChild(btn);
+      });
+      wordleKeyboard.appendChild(rowDiv);
+    });
+  }
+
+  function handleWordleInput(key) {
+    if (wordleGameOver) return;
+
+    const lowerKey = key.toLowerCase();
+
+    if (lowerKey === "backspace" || lowerKey === "back" || lowerKey === "⌫") {
+      wordleCurrentGuess = wordleCurrentGuess.slice(0, -1);
+      renderWordleGrid();
+    } else if (lowerKey === "enter") {
+      submitWordleGuess();
+    } else if (/^[a-z]$/.test(lowerKey)) {
+      if (wordleCurrentGuess.length < 5) {
+        wordleCurrentGuess += lowerKey.toUpperCase();
+        renderWordleGrid();
+      }
+    }
+  }
+
+  function submitWordleGuess() {
+    if (wordleCurrentGuess.length < 5) {
+      alert("Word must be 5 letters!");
+      return;
+    }
+
+    wordleGuesses.push(wordleCurrentGuess);
+    const lastGuess = wordleCurrentGuess;
+    wordleCurrentGuess = "";
+
+    renderWordleGrid();
+    renderWordleKeyboard();
+
+    setTimeout(() => {
+      if (lastGuess === wordleTargetWord) {
+        wordleGameOver = true;
+        wordlePlayedWords.add(wordleTargetWord);
+        const hint = WORDLE_HINTS[wordleTargetWord] || "";
+        if (wordleStatusText) {
+          wordleStatusText.innerHTML = `🎉 Beautifully done! You solved it!<br><br><strong>"${wordleTargetWord}"</strong><br><span style="font-size: 0.95rem; font-style: italic; opacity: 0.9;">${hint}</span>`;
+        }
+        if (wordleMessageBox) wordleMessageBox.classList.remove("hidden");
+      } else if (wordleGuesses.length >= 6) {
+        wordleGameOver = true;
+        if (wordleStatusText) {
+          wordleStatusText.innerHTML = `Nice try! The word was <strong>"${wordleTargetWord}"</strong>.<br>Let's play another one!`;
+        }
+        if (wordleMessageBox) wordleMessageBox.classList.remove("hidden");
+      }
+    }, 600);
+  }
+
+  // Hook up physical keyboard triggers
+  window.addEventListener("keydown", (e) => {
+    const wordleSection = document.getElementById("wordle-section");
+    if (wordleSection && !wordleSection.classList.contains("hidden")) {
+      if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") {
+        return;
+      }
+      
+      if (e.key === "Backspace") {
+        handleWordleInput("backspace");
+      } else if (e.key === "Enter") {
+        handleWordleInput("enter");
+      } else {
+        handleWordleInput(e.key);
+      }
+    }
+  });
+
+  if (wordleResetBtn) {
+    wordleResetBtn.addEventListener("click", initWordleGame);
   }
 
   // Start the application
