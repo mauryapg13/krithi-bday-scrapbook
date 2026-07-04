@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // --- State Initialization ---
+  let MEMORIES_DATA = {};
   let currentCategory = "all";
   let activeMemoriesList = []; // Flattened list of currently filtered memories
   let currentImageIndex = 0;
@@ -266,7 +267,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const wishesContainer = document.getElementById("wishes-container");
 
   // --- Initialize Application ---
-  function init() {
+  async function init() {
+    try {
+      // Dynamic fetch with cache-buster parameter to ensure fresh drive scans are loaded instantly
+      const response = await fetch("js/data.json?t=" + Date.now());
+      MEMORIES_DATA = await response.json();
+    } catch (e) {
+      console.warn("Failed to fetch fresh data.json, falling back to data.js:", e);
+      if (typeof window.MEMORIES_DATA !== "undefined") {
+        MEMORIES_DATA = window.MEMORIES_DATA;
+      } else {
+        MEMORIES_DATA = {};
+      }
+    }
+
     renderFilters();
     filterMemories("all");
     renderWishes();

@@ -108,9 +108,10 @@ def main():
         database[name] = folder_files
         time.sleep(0.8) # Polite crawler delay
 
-    # Generate js/data.js
+    # Generate js/data.js and js/data.json
     dest_dir = "js"
     dest_path = os.path.join(dest_dir, "data.js")
+    json_path = os.path.join(dest_dir, "data.json")
     os.makedirs(dest_dir, exist_ok=True)
 
     js_content = f"// Automatically generated birthday memories data from Google Drive. DO NOT EDIT DIRECTLY.\nconst MEMORIES_DATA = {json.dumps(database, indent=2)};\n"
@@ -118,7 +119,10 @@ def main():
     with open(dest_path, "w") as f:
         f.write(js_content)
 
-    print(f"\nSUCCESS: Rebuilt '{dest_path}' with {len(database.keys())} active categories.")
+    with open(json_path, "w") as f:
+        json.dump(database, f, indent=2)
+
+    print(f"\nSUCCESS: Rebuilt '{dest_path}' and '{json_path}' with {len(database.keys())} active categories.")
 
 if __name__ == "__main__":
     main()
