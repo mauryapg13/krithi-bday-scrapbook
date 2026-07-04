@@ -34,14 +34,46 @@ document.addEventListener("DOMContentLoaded", () => {
   guestbookWishes = guestbookWishes.filter(w => !w.id.startsWith("def-"));
   localStorage.setItem(WISHES_STORAGE_KEY, JSON.stringify(guestbookWishes));
 
-  // --- Real-time Cloud Sync Configuration (kvdb.io) ---
+  // --- Real-time Cloud Sync Configuration ---
+  // Option A: Firebase Firestore (Recommended)
+  // Paste your Web App credentials here to sync in real-time across users:
+  const FIREBASE_CONFIG = null;
+  /* Example:
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSy...",
+    authDomain: "...",
+    projectId: "...",
+    storageBucket: "...",
+    messagingSenderId: "...",
+    appId: "..."
+  };
+  */
+
+  // Option B: KVDB.io Key-Value Database (Easiest zero-config fallback)
   const KVDB_BASE = "https://kvdb.io/Qpw3YLeevQiJQ2Ekh2C6h1";
+
+  let db = null;
+  let useFirebase = false;
+
+  if (FIREBASE_CONFIG && typeof firebase !== "undefined") {
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      useFirebase = true;
+      console.log("Firebase Firestore initialized successfully.");
+    } catch (e) {
+      console.warn("Firebase initialization failed. Falling back to local/KVDB.", e);
+    }
+  }
+
   let lastFetchedWishesJson = "";
   let lastFetchedLikesJson = "";
 
   async function syncFromCloud() {
+    if (useFirebase) return; // Firebase keeps sync via real-time snapshots
+    
     try {
-      // Fetch wishes
+      // Fetch wishes from KVDB
       const wishesRes = await fetch(`${KVDB_BASE}/wishes`);
       if (wishesRes.ok) {
         const cloudWishesText = await wishesRes.text();
@@ -56,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // Fetch likes
+      // Fetch likes from KVDB
       const likesRes = await fetch(`${KVDB_BASE}/likes`);
       if (likesRes.ok) {
         const cloudLikesText = await likesRes.text();
@@ -82,7 +114,60 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // --- Real-time Firebase Firestore Listeners ---
+  function setupFirebaseSync() {
+    if (!useFirebase || !db) return;
+
+    // Listen to wishes changes
+    db.collection("wishes").orderBy("timestamp", "asc").onSnapshot((snapshot) => {
+      const wishes = [];
+      snapshot.forEach((doc) => {
+        wishes.push({ id: doc.id, ...doc.data() });
+      });
+      guestbookWishes = wishes.filter(w => !w.id.startsWith("def-"));
+      localStorage.setItem(WISHES_STORAGE_KEY, JSON.stringify(guestbookWishes));
+      renderWishes();
+    }, (error) => {
+      console.error("Firebase wishes sync failed:", error);
+    });
+
+    // Listen to likes changes
+    db.collection("likes").onSnapshot((snapshot) => {
+      const likes = {};
+      snapshot.forEach((doc) => {
+        likes[doc.id] = doc.data().count || 0;
+      });
+      likesCountMap = likes;
+      localStorage.setItem(LIKES_COUNT_KEY, JSON.stringify(likesCountMap));
+      if (lightbox.open) {
+        const currentFile = activeMemoriesList[currentImageIndex];
+        if (currentFile) {
+          const likesCount = likesCountMap[currentFile.id] || 0;
+          lightboxLikeCount.textContent = likesCount;
+        }
+      }
+      renderCards();
+    }, (error) => {
+      console.error("Firebase likes sync failed:", error);
+    });
+  }
+
   async function saveWishesToCloud() {
+    if (useFirebase && db) {
+      try {
+        for (const wish of guestbookWishes) {
+          await db.collection("wishes").doc(wish.id).set({
+            author: wish.author,
+            text: wish.text,
+            timestamp: wish.timestamp
+          });
+        }
+      } catch (e) {
+        console.error("Failed to save wishes to Firebase:", e);
+      }
+      return;
+    }
+
     try {
       lastFetchedWishesJson = JSON.stringify(guestbookWishes);
       await fetch(`${KVDB_BASE}/wishes`, {
@@ -96,6 +181,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function saveLikesToCloud() {
+    if (useFirebase && db) {
+      try {
+        for (const id in likesCountMap) {
+          await db.collection("likes").doc(id).set({
+            count: likesCountMap[id]
+          });
+        }
+      } catch (e) {
+        console.error("Failed to save likes to Firebase:", e);
+      }
+      return;
+    }
+
     try {
       lastFetchedLikesJson = JSON.stringify(likesCountMap);
       await fetch(`${KVDB_BASE}/likes`, {
@@ -159,9 +257,13 @@ document.addEventListener("DOMContentLoaded", () => {
     renderWishes();
     setupEventListeners();
     
-    // Sync with cloud database and start polling every 10 seconds
-    syncFromCloud();
-    setInterval(syncFromCloud, 10000);
+    if (useFirebase) {
+      setupFirebaseSync();
+    } else {
+      // Sync with cloud database and start polling every 10 seconds
+      syncFromCloud();
+      setInterval(syncFromCloud, 10000);
+    }
   }
 
   // --- Helper: Get total images count ---
@@ -541,6 +643,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Save to cloud
     saveWishesToCloud();
+    
+    if (useFirebase && db) {
+      db.collection("wishes").doc(id).delete().catch(e => {
+        console.error("Failed to delete wish from Firebase:", e);
+      });
+    }
   }
 
   // --- Event Listeners Mapping ---
