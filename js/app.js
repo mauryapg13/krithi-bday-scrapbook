@@ -37,17 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Real-time Cloud Sync Configuration ---
   // Option A: Firebase Firestore (Recommended)
   // Paste your Web App credentials here to sync in real-time across users:
-  const FIREBASE_CONFIG = null;
-  /* Example:
   const FIREBASE_CONFIG = {
-    apiKey: "AIzaSy...",
-    authDomain: "...",
-    projectId: "...",
-    storageBucket: "...",
-    messagingSenderId: "...",
-    appId: "..."
+    apiKey: "AIzaSyAHa5lvbeZC0Ft6IQfuucyCbm8_KAHUsls",
+    authDomain: "krithi-bday-scrapbook.firebaseapp.com",
+    projectId: "krithi-bday-scrapbook",
+    storageBucket: "krithi-bday-scrapbook.firebasestorage.app",
+    messagingSenderId: "601249588152",
+    appId: "1:601249588152:web:c2c7aff87b0974e3cda54d",
+    measurementId: "G-J03QGPVDWV"
   };
-  */
 
   // Option B: KVDB.io Key-Value Database (Easiest zero-config fallback)
   const KVDB_BASE = "https://kvdb.io/Qpw3YLeevQiJQ2Ekh2C6h1";
