@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   localStorage.setItem(WISHES_STORAGE_KEY, JSON.stringify(guestbookWishes));
 
   // --- Real-time Cloud Sync Configuration (kvdb.io) ---
-  const KVDB_BASE = "https://kvdb.io/KrithiBdayScrapbook2026";
+  const KVDB_BASE = "https://kvdb.io/Qpw3YLeevQiJQ2Ekh2C6h1";
   let lastFetchedWishesJson = "";
   let lastFetchedLikesJson = "";
 
