@@ -801,47 +801,43 @@ document.addEventListener("DOMContentLoaded", () => {
     wordleGameOver = false;
     if (wordleMessageBox) wordleMessageBox.classList.add("hidden");
 
-    renderWordleGrid();
+    buildWordleGridHTML();
     renderWordleKeyboard();
   }
 
-  function renderWordleGrid() {
+  function buildWordleGridHTML() {
     if (!wordleGrid) return;
     wordleGrid.innerHTML = "";
-
     for (let r = 0; r < 6; r++) {
       const rowDiv = document.createElement("div");
       rowDiv.className = "wordle-row";
       rowDiv.setAttribute("role", "row");
-
-      const guess = wordleGuesses[r] || "";
       for (let c = 0; c < 5; c++) {
         const tile = document.createElement("div");
         tile.className = "wordle-tile";
         tile.setAttribute("role", "gridcell");
-
-        let letter = "";
-        if (r < wordleGuesses.length) {
-          letter = guess[c] || "";
-        } else if (r === wordleGuesses.length) {
-          letter = wordleCurrentGuess[c] || "";
-          if (letter) {
-            tile.classList.add("pop");
-          }
-        }
-
-        tile.textContent = letter;
-
-        if (r < wordleGuesses.length) {
-          const resultClass = getTileResultClass(letter, c, wordleTargetWord);
-          tile.classList.add(resultClass);
-          tile.classList.add("flip");
-          tile.style.animationDelay = `${c * 100}ms`;
-        }
-
+        tile.id = `wordle-tile-${r}-${c}`;
         rowDiv.appendChild(tile);
       }
       wordleGrid.appendChild(rowDiv);
+    }
+  }
+
+  function updateWordleGridDisplay() {
+    const activeRow = wordleGuesses.length;
+    if (activeRow >= 6) return;
+    
+    for (let c = 0; c < 5; c++) {
+      const tile = document.getElementById(`wordle-tile-${activeRow}-${c}`);
+      if (tile) {
+        const char = wordleCurrentGuess[c] || "";
+        tile.textContent = char;
+        if (char) {
+          tile.classList.add("pop");
+        } else {
+          tile.classList.remove("pop");
+        }
+      }
     }
   }
 
@@ -916,13 +912,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (lowerKey === "backspace" || lowerKey === "back" || lowerKey === "⌫") {
       wordleCurrentGuess = wordleCurrentGuess.slice(0, -1);
-      renderWordleGrid();
+      updateWordleGridDisplay();
     } else if (lowerKey === "enter") {
       submitWordleGuess();
     } else if (/^[a-z]$/.test(lowerKey)) {
       if (wordleCurrentGuess.length < 5) {
         wordleCurrentGuess += lowerKey.toUpperCase();
-        renderWordleGrid();
+        updateWordleGridDisplay();
       }
     }
   }
@@ -933,15 +929,33 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const activeRow = wordleGuesses.length;
     wordleGuesses.push(wordleCurrentGuess);
-    const lastGuess = wordleCurrentGuess;
+    const currentGuess = wordleCurrentGuess;
     wordleCurrentGuess = "";
 
-    renderWordleGrid();
-    renderWordleKeyboard();
+    // Flip tiles of the submitted row with staged delays
+    for (let c = 0; c < 5; c++) {
+      const tile = document.getElementById(`wordle-tile-${activeRow}-${c}`);
+      if (tile) {
+        const letter = currentGuess[c];
+        const resultClass = getTileResultClass(letter, c, wordleTargetWord);
+        
+        tile.classList.add("flip");
+        tile.style.animationDelay = `${c * 100}ms`;
 
+        // Update color class halfway through the flip
+        setTimeout(() => {
+          tile.classList.add(resultClass);
+        }, c * 100 + 250);
+      }
+    }
+
+    // Refresh keyboard highlights and evaluate game over state after animations finish
     setTimeout(() => {
-      if (lastGuess === wordleTargetWord) {
+      renderWordleKeyboard();
+
+      if (currentGuess === wordleTargetWord) {
         wordleGameOver = true;
         wordlePlayedWords.add(wordleTargetWord);
         const hint = WORDLE_HINTS[wordleTargetWord] || "";
