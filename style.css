@@ -77,9 +77,8 @@ body {
   min-width: 300px;
   min-height: 300px;
   border-radius: 50%;
-  filter: blur(140px);
-  opacity: 0.16;
-  mix-blend-mode: screen;
+  filter: blur(100px);
+  opacity: 0.35;
   will-change: transform;
 }
 

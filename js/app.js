@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     allBtn.id = "filter-btn-all";
     allBtn.setAttribute("role", "tab");
     allBtn.setAttribute("aria-selected", "true");
-    allBtn.innerHTML = `All Memories 📸 <span style="opacity: 0.7; font-size: 0.8rem;">(${totalCount})</span>`;
+    allBtn.innerHTML = `All Memories 📸`;
     allBtn.addEventListener("click", () => selectCategory("all", allBtn));
     filterBar.appendChild(allBtn);
 
@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.setAttribute("aria-selected", "false");
       
       const displayName = CATEGORY_DISPLAY_NAMES[key] || key;
-      btn.innerHTML = `${displayName} <span style="opacity: 0.7; font-size: 0.8rem;">(${MEMORIES_DATA[key].length})</span>`;
+      btn.innerHTML = `${displayName}`;
       btn.addEventListener("click", () => selectCategory(key, btn));
       filterBar.appendChild(btn);
     }
@@ -333,7 +333,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Let's sort alphabetically by folder first, then file name to make it look organized.
       activeMemoriesList.sort((a, b) => a.folder.localeCompare(b.folder) || a.name.localeCompare(b.name));
       
-      statsCounter.innerHTML = `✨ <strong>${activeMemoriesList.length}</strong> memories, infinite laughs, and warm wishes for our favorite person`;
+      if (statsCounter) {
+        statsCounter.innerHTML = `✨ <strong>${activeMemoriesList.length}</strong> memories, infinite laughs, and warm wishes for our favorite person`;
+      }
     } else {
       MEMORIES_DATA[category].forEach(file => {
         activeMemoriesList.push({ ...file, folder: category });
@@ -341,7 +343,9 @@ document.addEventListener("DOMContentLoaded", () => {
       activeMemoriesList.sort((a, b) => a.name.localeCompare(b.name));
       
       const displayName = CATEGORY_DISPLAY_NAMES[category] || category;
-      statsCounter.innerHTML = `📸 Reliving <strong>${activeMemoriesList.length}</strong> beautiful moments in <strong>${displayName}</strong>`;
+      if (statsCounter) {
+        statsCounter.innerHTML = `📸 Reliving <strong>${activeMemoriesList.length}</strong> beautiful moments in <strong>${displayName}</strong>`;
+      }
     }
 
     renderCards();
