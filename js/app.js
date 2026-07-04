@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Let's sort alphabetically by folder first, then file name to make it look organized.
       activeMemoriesList.sort((a, b) => a.folder.localeCompare(b.folder) || a.name.localeCompare(b.name));
       
-      statsCounter.innerHTML = `🌟 Showing <strong>${activeMemoriesList.length}</strong> memories across all categories`;
+      statsCounter.innerHTML = `✨ <strong>${activeMemoriesList.length}</strong> memories, infinite laughs, and warm wishes for our favorite person`;
     } else {
       MEMORIES_DATA[category].forEach(file => {
         activeMemoriesList.push({ ...file, folder: category });
@@ -341,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
       activeMemoriesList.sort((a, b) => a.name.localeCompare(b.name));
       
       const displayName = CATEGORY_DISPLAY_NAMES[category] || category;
-      statsCounter.innerHTML = `📂 Folder: <strong>${displayName}</strong> (${activeMemoriesList.length} photos)`;
+      statsCounter.innerHTML = `📸 Reliving <strong>${activeMemoriesList.length}</strong> beautiful moments in <strong>${displayName}</strong>`;
     }
 
     renderCards();

@@ -49,12 +49,90 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-bg-main);
+  background-color: transparent;
   color: var(--color-text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-y: scroll;
+}
+
+/* Animated Aurora Background Wrapper */
+.aurora-bg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--color-bg-main);
+}
+
+.aurora-blob {
+  position: absolute;
+  width: 50vw;
+  height: 50vw;
+  min-width: 300px;
+  min-height: 300px;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.blob-1 {
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 80%);
+  top: -10%;
+  left: -10%;
+  animation: floatBlob1 25s infinite alternate ease-in-out;
+}
+
+.blob-2 {
+  background: radial-gradient(circle, var(--color-secondary) 0%, transparent 80%);
+  bottom: -10%;
+  right: -10%;
+  animation: floatBlob2 30s infinite alternate ease-in-out;
+}
+
+.blob-3 {
+  background: radial-gradient(circle, var(--color-primary-light) 0%, transparent 80%);
+  top: 40%;
+  right: 10%;
+  animation: floatBlob3 28s infinite alternate ease-in-out;
+}
+
+.blob-4 {
+  background: radial-gradient(circle, var(--color-border) 0%, transparent 80%);
+  bottom: 20%;
+  left: 10%;
+  animation: floatBlob4 32s infinite alternate ease-in-out;
+}
+
+@keyframes floatBlob1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(8vw, 6vh, 0) scale(1.15); }
+  100% { transform: translate3d(-4vw, 12vh, 0) scale(0.9); }
+}
+
+@keyframes floatBlob2 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-12vw, -8vh, 0) scale(0.85); }
+  100% { transform: translate3d(6vw, 4vh, 0) scale(1.1); }
+}
+
+@keyframes floatBlob3 {
+  0% { transform: translate3d(0, 0, 0) scale(0.9); }
+  50% { transform: translate3d(-6vw, 10vh, 0) scale(1.2); }
+  100% { transform: translate3d(10vw, -6vh, 0) scale(1); }
+}
+
+@keyframes floatBlob4 {
+  0% { transform: translate3d(0, 0, 0) scale(1.15); }
+  50% { transform: translate3d(12vw, -12vh, 0) scale(0.8); }
+  100% { transform: translate3d(-8vw, 8vh, 0) scale(1.1); }
 }
 
 /* Utilities */
